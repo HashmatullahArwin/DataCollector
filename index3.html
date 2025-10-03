@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>My Organization Name — Client Entry</title>
+
+  <!-- jsPDF and autoTable plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #fff;
+      --accent: #2980b9;
+      --good: #27ae60;
+      --warn: #e67e22;
+      --danger: #e74c3c;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 18px;
+    }
+
+    form {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cfcfcf;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-top: 6px;
+      box-sizing: border-box;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      flex: 1;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .save {
+      background: var(--good);
+      color: #fff;
+    }
+
+    .reset {
+      background: var(--warn);
+      color: #fff;
+    }
+
+    .view {
+      background: var(--accent);
+      color: #fff;
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+    }
+
+    .dataCard {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      min-width: 600px;
+    }
+
+    th, td {
+      border: 1px solid #e6e6e6;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #2c3e50;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .download {
+      background: #556;
+      color: #fff;
+    }
+
+    .copy {
+      background: #444;
+      color: #fff;
+    }
+
+    .danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .no-print {
+      display: inline-block;
+    }
+
+    .printHeader {
+      margin-bottom: 10px;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    #dataSection {
+      overflow-x: auto;
+    }
+
+    @media (max-width: 980px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      header {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      input[type="text"],
+      input[type="tel"],
+      input[type="number"] {
+        font-size: 1rem;
+      }
+      button {
+        font-size: 0.95rem;
+        padding: 10px;
+      }
+      table {
+        font-size: 0.9rem;
+        min-width: unset;
+      }
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: #fff;
+      }
+      header, .buttons, .actions {
+        display: none;
+      }
+      .printHeader {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 contenteditable="false" id="orgName">My Organization Name</h1>
+  <div class="small">Tip: change the title in the file if you want a different org name</div>
+</header>
+
+<div class="container">
+  <!-- Left: Form -->
+  <form id="clientForm" autocomplete="off" class="dataCard">
+    <label for="staffName">Staff Name</label>
+    <input id="staffName" type="text" required placeholder="Staff who is entering data">
+
+    <label for="caseId">Case ID</label>
+    <input id="caseId" type="text" required placeholder="Enter case ID (you type it)">
+
+    <div class="row">
+      <div>
+        <label for="firstName">First Name</label>
+        <input id="firstName" type="text" required placeholder="Client first name">
+      </div>
+      <div>
+        <label for="lastName">Last Name</label>
+        <input id="lastName" type="text" required placeholder="Client last name">
+      </div>
+    </div>
+
+    <label for="familySize">Family Size</label>
+    <input id="familySize" type="number" min="1" required placeholder="Number of family members">
+
+    <label for="address">Address</label>
+    <input id="address" type="text" required placeholder="Client address">
+
+    <label for="phone">Phone</label>
+    <input id="phone" type="tel" required placeholder="Phone number">
+
+    <div class="buttons no-print">
+      <button type="submit" class="save">Save</button>
+      <button type="reset" class="reset">Reset Form</button>
+    </div>
+    <div class="small" style="margin-top:8px">
+      Saved entries remain on this device (localStorage) until you clear them.
+    </div>
+  </form>
+
+  <!-- Right: Data / actions -->
+  <div>
+    <div class="dataCard">
+      <button class="view no-print" id="viewBtn">View Collected Data</button>
+
+      <div id="dataSection" style="display:none;margin-top:10px">
+        <div class="printHeader" id="printHeader"></div>
+
+        <h3 style="margin-top:0">Collected Client Data</h3>
+        <div style="overflow:auto;max-height:360px">
+          <table id="dataTable" aria-label="Collected client data">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>First</th>
+                <th>Last</th>
+                <th>Family</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Time</th>
+                <th>Staff</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="actions no-print" style="margin-top:10px">
+          <button onclick="printData()" class="save">Print</button>
+          <button onclick="trySendEmail()" class="download">Send Email</button>
+          <button onclick="downloadCSV()" class="download">Download CSV</button>
+          <button onclick="downloadPDF()" class="download">Download PDF</button>
+          <button onclick="copyEmailBody()" class="copy">Copy Email Body</button>
+          <button onclick="clearAllData()" class="danger">Clear All Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'clients';
+  const STAFF_KEY = 'lastStaffName';
+  const form = document.getElementById('clientForm');
+  const tbody = document.querySelector('#dataTable tbody');
+  const dataSection = document.getElementById('dataSection');
+  const viewBtn = document.getElementById('viewBtn');
+  const printHeader = document.getElementById('printHeader');
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const lastStaff = localStorage.getItem(STAFF_KEY);
+    if (lastStaff) document.getElementById('staffName').value = lastStaff;
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entry = {
+      caseId: document.getElementById('caseId').value.trim(),
+      staffName: document.getElementById('staffName').value.trim(),
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      familySize: document.getElementById('familySize').value,
+      address: document.getElementById('address').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      time: new Date().toLocaleString()
+    };
+
+    if (!entry.caseId) {
+      alert('Case ID is required.');
+      return;
+    }
+
+    let arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    arr.push(entry);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    localStorage.setItem(STAFF_KEY, entry.staffName || '');
+
+    form.reset();
+    const last = localStorage.getItem(STAFF_KEY);
+    if (last) document.getElementById('staffName').value = last;
+    alert('Saved locally.');
+  });
+
+  form.addEventListener('reset', () => {
+    setTimeout(() => {
+      const last = localStorage.getItem(STAFF_KEY);
+      if (last) document.getElementById('staffName').value = last;
+    }, 10);
+  });
+
+  viewBtn.addEventListener('click', showData);
+  function showData() {
+    const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    tbody.innerHTML = '';
+    arr.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+<td>${escapeHtml(item.caseId)}</td>
+<td>${escapeHtml(item.firstName)}</td>
+<td>${escapeHtml(item.lastName)}</td>
+<td>${escapeHtml(item.familySize)}</td>
+<td>${escapeHtml(item.address)}</td>
+<td>${escapeHtml(item.phone)}</td>
+<td>${escapeHtml(item.time)}</td>
+<td>${escapeHtml(item.staffName)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const now = new Date();
+    if (arr.length) {
+      printHeader.innerHTML = `
+        <div><strong>Prepared by:</strong> ${escapeHtml(localStorage.getItem(STAFF_KEY) || '-')}</div>
+        <div><strong>Printed On:</strong> ${now.toLocaleString()}</div>
+        <div><strong>Total Cases:</strong> ${arr.length}</div>
+      `;
+    } else {
+      printHeader.innerHTML = '<div><em>No records stored yet.</em></div>';
+    }
+    dataSection.style.display = 'block';
+  }
+
+  function printData() {
+    const now = new Date();
+    printHeader.innerHTML = `<div><strong>Prepared by:</strong> ${escapeHtml(localStorage.getItem(STAFF_KEY) || '-')}</div>
+<div><strong>Print Time:</strong> ${now.toLocaleString()}</div>`;
+    window.print();
+  }
+
+  function clientsToCSV(clients) {
+    const headers = [
+      'Case ID', 'First Name', 'Last Name', 'Family Size',
+      'Address', 'Phone', 'Entry Time', 'Staff'
+    ];
+    const rows = clients.map(c =>
+      [
+        c.caseId, c.firstName, c.lastName, c.familySize,
+        c.address, c.phone, c.time, c.staffName
+      ].map(csvEscape).join(',')
+    );
+    return headers.join(',') + '\n' + rows.join('\n');
+  }
+
+  function csvEscape(value) {
+    if (value == null) return '';
+    const s = String(value).replace(/"/g, '""');
+    return `"${s}"`;
+  }
+
+  function downloadCSV(filename = 'clients.csv') {
+    const clients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (!clients.length) {
+      alert('No data to download.');
+      return;
+    }
+    const csv = clientsToCSV(clients);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    alert('CSV downloaded.');
+  }
+
+  function buildEmailBody(clients) {
+    let lines = [];
+    lines.push('Collected Client Data:\n');
+
+    clients.forEach((c, i) => {
+      lines.push(`${i + 1}. Case ID: ${c.caseId}`);
+      lines.push(` Name: ${c.firstName} ${c.lastName}`);
+      lines.push(` Family Size: ${c.familySize}`);
+      lines.push(` Address: ${c.address}`);
+      lines.push(` Phone: ${c.phone}`);
+      lines.push(` Entry Time: ${c.time}`);
+      lines.push(` Staff: ${c.staffName}`);
+      lines.push('');
+    });
+
+    lines.push(`Report prepared on: ${new Date().toLocaleString()}`);
+    return lines.join('\n');
+  }
+
+  async function copyEmailBody() {
+    const clients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (!clients.length) {
+      alert('No data to copy.');
+      return;
+    }
+    const body = buildEmailBody(clients);
+    try {
+      await navigator.clipboard.writeText(body);
+      alert('Full email text copied to clipboard.');
+    } catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = body;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        alert('Copied to clipboard.');
+      } catch (e) {
+        alert('Unable to copy.');
+      }
+      ta.remove();
+    }
+  }
+
+  function trySendEmail() {
+    const clients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (!clients.length) {
+      alert('No data to send.');
+      return;
+    }
+
+    const fullBody = buildEmailBody(clients);
+    const subject = 'Client Data Report';
+
+    if (fullBody.length < 1600) {
+      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
+      window.location.href = mailto;
+      navigator.clipboard?.writeText(fullBody).catch(() => {});
+      return;
+    }
+
+    const summary = createSummary(clients);
+    downloadCSV('clients.csv');
+    navigator.clipboard?.writeText(fullBody).then(() => {
+      alert('Full report copied and CSV downloaded. Compose your email.');
+    }).catch(() => {
+      alert('CSV downloaded. Clipboard copy may be blocked.');
+    });
+
+    const shortBody = `${summary}\n\n(Full report copied to clipboard and CSV downloaded.)`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shortBody)}`;
+  }
+
+  function createSummary(clients) {
+    const now = new Date();
+    return `Client Data Report\nTotal cases: ${clients.length}\nPrepared by: ${localStorage.getItem(STAFF_KEY) || '-'}\nGenerated: ${now.toLocaleString()}\n\nTop 10:\n` +
+      clients.slice(0, 10)
+        .map((c, i) => `${i + 1}. ${c.caseId} – ${c.firstName} ${c.lastName} – ${c.phone}`)
+        .join('\n');
+  }
+
+  function clearAllData() {
+    if (!confirm('Are you sure you want to permanently delete all saved entries on this device?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    tbody.innerHTML = '';
+    dataSection.style.display = 'none';
+    alert('All local records cleared.');
+  }
+
+  function escapeHtml(text) {
+    if (text == null) return '';
+    return String(text)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+  }
+
+  // PDF export in table (one row per record)
+  async function downloadPDF() {
+    const clients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (!clients.length) {
+      alert('No data to include in PDF.');
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const headers = [
+      ['Case ID', 'First Name', 'Last Name', 'Family Size', 'Address', 'Phone', 'Entry Time', 'Staff']
+    ];
+
+    const rows = clients.map(c => [
+      c.caseId,
+      c.firstName,
+      c.lastName,
+      c.familySize,
+      c.address,
+      c.phone,
+      c.time,
+      c.staffName
+    ]);
+
+    doc.setFontSize(14);
+    doc.text('Collected Client Data', 14, 16);
+
+    doc.autoTable({
+      startY: 20,
+      head: headers,
+      body: rows,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [40, 60, 100] },
+      margin: { left: 14, right: 14 }
+    });
+
+    doc.save('client-data.pdf');
+  }
+</script>
+
+</body>
+</html>
