@@ -114,7 +114,6 @@ th { background: #2c3e50; color: #fff; }
               <th>Family</th>
               <th>Address</th>
               <th>Phone</th>
-              <th>Time</th>
               <th>Staff</th>
               <th>Actions</th>
             </tr>
@@ -207,8 +206,7 @@ function saveClient(e) {
     familySize: familySize.value,
     address: address.value.trim(),
     phone: phone.value.trim(),
-    staffName: staffName.value.trim(),
-    time: new Date().toLocaleString()
+    staffName: staffName.value.trim()
   };
 
   const sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -235,7 +233,6 @@ function showData() {
       <td>${escapeHtml(c.familySize)}</td>
       <td>${escapeHtml(c.address)}</td>
       <td>${escapeHtml(c.phone)}</td>
-      <td>${escapeHtml(c.time)}</td>
       <td>${escapeHtml(c.staffName)}</td>
       <td>
         <button class="accent" onclick="editClient(${i})">Edit</button>
@@ -281,8 +278,8 @@ function downloadCSV() {
   const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}")[currentSession] || [];
   if (!arr.length) return alert("No data to download.");
   const csv = [
-    ["Case ID","First","Last","Family","Address","Phone","Time","Staff"],
-    ...arr.map(c => [c.caseId,c.firstName,c.lastName,c.familySize,c.address,c.phone,c.time,c.staffName])
+    ["Case ID","First","Last","Family","Address","Phone","Staff"],
+    ...arr.map(c => [c.caseId,c.firstName,c.lastName,c.familySize,c.address,c.phone,c.staffName])
   ].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
@@ -299,8 +296,8 @@ function downloadPDF() {
   doc.text(`Client Data (${currentSession})`, 14, 16);
   doc.autoTable({
     startY: 20,
-    head: [['Case ID','First','Last','Family','Address','Phone','Time','Staff']],
-    body: arr.map(c => [c.caseId,c.firstName,c.lastName,c.familySize,c.address,c.phone,c.time,c.staffName])
+    head: [['Case ID','First','Last','Family','Address','Phone','Staff']],
+    body: arr.map(c => [c.caseId,c.firstName,c.lastName,c.familySize,c.address,c.phone,c.staffName])
   });
   doc.save(`${currentSession}-clients.pdf`);
 }
